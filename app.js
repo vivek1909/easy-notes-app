@@ -11,7 +11,24 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // configuting the database
-//const dbConfig =
+const dbConfig = require("./config/database.config.js");
+const mongoose = require("mongoose");
+
+mongoose.Promise = global.Promise;
+
+// connecting to the database
+mongoose
+  .connect(dbConfig.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log("Successfully connected to the database");
+  })
+  .catch(err => {
+    console.log("could not connect to the database. Exiting now....");
+    process.exit();
+  });
 
 // define a simple route
 app.get("/", (req, res) => {
@@ -19,6 +36,9 @@ app.get("/", (req, res) => {
     message: "Welcome to EasyNotes application. Take notes quickly."
   });
 });
+
+// require notes routes
+require("./app/routes/note.route.js")(app);
 
 // listen for requests
 app.listen(3000, () => {
